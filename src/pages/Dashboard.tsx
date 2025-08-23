@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Store, User, LogOut, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { StoreDirectory } from '@/components/StoreDirectory';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -92,23 +93,7 @@ export default function Dashboard() {
             </TabsContent>
 
             <TabsContent value="stores" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Store Profiles</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Browse and connect with local stores and services in your residential area.
-                  </p>
-                  <div className="mt-4 p-8 border-2 border-dashed border-border rounded-lg text-center">
-                    <Store className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium mb-2">No stores available</h3>
-                    <p className="text-muted-foreground">
-                      Store profiles will appear here when available
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <StoreDirectory />
             </TabsContent>
 
             <TabsContent value="profile" className="space-y-4">

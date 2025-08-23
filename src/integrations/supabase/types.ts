@@ -41,6 +41,48 @@ export type Database = {
         }
         Relationships: []
       }
+      stores: {
+        Row: {
+          address: string | null
+          category: Database["public"]["Enums"]["store_category"]
+          contact_info: Json | null
+          created_at: string
+          description: string | null
+          email: string | null
+          hours: Json | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          category: Database["public"]["Enums"]["store_category"]
+          contact_info?: Json | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          hours?: Json | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          category?: Database["public"]["Enums"]["store_category"]
+          contact_info?: Json | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          hours?: Json | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -49,7 +91,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      store_category: "grocery" | "pharmacy" | "eatery" | "suya" | "others"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +218,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      store_category: ["grocery", "pharmacy", "eatery", "suya", "others"],
+    },
   },
 } as const
