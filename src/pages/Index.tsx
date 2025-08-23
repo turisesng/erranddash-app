@@ -1,11 +1,51 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Loader2, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+      <div className="text-center max-w-md mx-auto p-6">
+        <div className="mb-8">
+          <Home className="h-16 w-16 mx-auto mb-4 text-primary" />
+          <h1 className="text-4xl font-bold mb-4 text-foreground">Home Dash</h1>
+          <p className="text-xl text-muted-foreground mb-8">
+            Your residential management app for connecting with local services and managing your profile
+          </p>
+        </div>
+        
+        <Button 
+          onClick={() => navigate('/auth')} 
+          size="lg"
+          className="w-full"
+        >
+          Get Started
+        </Button>
+        
+        <p className="text-sm text-muted-foreground mt-4">
+          Sign up or log in to access your dashboard
+        </p>
       </div>
     </div>
   );
