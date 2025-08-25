@@ -6,10 +6,15 @@ import { Store, User, LogOut, Home, Package } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { StoreDirectory } from '@/components/StoreDirectory';
 import OrderManagement from '@/components/OrderManagement';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  
+  // Initialize push notifications
+  usePushNotifications();
 
   const handleSignOut = async () => {
     await signOut();
@@ -28,10 +33,13 @@ export default function Dashboard() {
             <Home className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold text-foreground">Home Dash</h1>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <NotificationCenter />
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </div>
 
