@@ -6,8 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (phone: string, password: string, fullName: string) => Promise<{ error: any }>;
-  signIn: (phone: string, password: string) => Promise<{ error: any }>;
+  sendOtp: (phone: string) => Promise<{ error: any }>;
+  verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -71,16 +71,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (phone: string, password: string, fullName: string) => {
+  const sendOtp = async (phone: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signInWithOtp({
         phone,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          }
-        }
       });
       return { error };
     } catch (error) {
@@ -88,11 +82,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signIn = async (phone: string, password: string) => {
+  const verifyOtp = async (phone: string, token: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.verifyOtp({
         phone,
-        password,
+        token,
+        type: 'sms'
       });
       return { error };
     } catch (error) {
@@ -108,8 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
-    signUp,
-    signIn,
+    sendOtp,
+    verifyOtp,
     signOut,
   };
 
