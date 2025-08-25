@@ -1,4 +1,4 @@
-import { Store, categoryLabels, categoryIcons } from '@/hooks/useStores';
+import { Store, categoryLabels, categoryIcons, useStoreContacts } from '@/hooks/useStores';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ interface StoreCardProps {
 }
 
 export const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
+  const { data: storeContacts } = useStoreContacts(store.id);
   const navigate = useNavigate();
   const CategoryIcon = icons[categoryIcons[store.category] as keyof typeof icons];
 
@@ -44,17 +45,17 @@ export const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
             </div>
           )}
           
-          {store.phone && (
+          {storeContacts?.phone && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" />
-              <span>{store.phone}</span>
+              <span>{storeContacts.phone}</span>
             </div>
           )}
-          
-          {store.email && (
+
+          {storeContacts?.email && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Mail className="h-4 w-4" />
-              <span>{store.email}</span>
+              <span>{storeContacts.email}</span>
             </div>
           )}
           

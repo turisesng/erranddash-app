@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useStore, categoryLabels, categoryIcons } from '@/hooks/useStores';
+import { useStore, categoryLabels, categoryIcons, useStoreContacts } from '@/hooks/useStores';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ export default function StoreProfile() {
   const { storeId } = useParams<{ storeId: string }>();
   const navigate = useNavigate();
   const { data: store, isLoading, error } = useStore(storeId!);
+  const { data: storeContacts } = useStoreContacts(storeId!);
 
   if (isLoading) {
     return (
@@ -100,31 +101,31 @@ export default function StoreProfile() {
                 </div>
               )}
 
-              {store.phone && (
+              {storeContacts?.phone && (
                 <div className="flex items-start gap-3">
                   <Phone className="h-5 w-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium">Phone</p>
                     <a 
-                      href={`tel:${store.phone}`}
+                      href={`tel:${storeContacts.phone}`}
                       className="text-primary hover:underline"
                     >
-                      {store.phone}
+                      {storeContacts.phone}
                     </a>
                   </div>
                 </div>
               )}
 
-              {store.email && (
+              {storeContacts?.email && (
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium">Email</p>
                     <a 
-                      href={`mailto:${store.email}`}
+                      href={`mailto:${storeContacts.email}`}
                       className="text-primary hover:underline"
                     >
-                      {store.email}
+                      {storeContacts.email}
                     </a>
                   </div>
                 </div>
@@ -170,18 +171,18 @@ export default function StoreProfile() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              {store.phone && (
+              {storeContacts?.phone && (
                 <Button asChild>
-                  <a href={`tel:${store.phone}`}>
+                  <a href={`tel:${storeContacts.phone}`}>
                     <Phone className="h-4 w-4 mr-2" />
                     Call Store
                   </a>
                 </Button>
               )}
               
-              {store.email && (
+              {storeContacts?.email && (
                 <Button variant="outline" asChild>
-                  <a href={`mailto:${store.email}`}>
+                  <a href={`mailto:${storeContacts.email}`}>
                     <Mail className="h-4 w-4 mr-2" />
                     Send Email
                   </a>

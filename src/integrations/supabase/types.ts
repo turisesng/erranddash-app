@@ -222,44 +222,73 @@ export type Database = {
         }
         Relationships: []
       }
+      store_contacts: {
+        Row: {
+          contact_info: Json | null
+          created_at: string
+          email: string | null
+          id: string
+          phone: string | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          contact_info?: Json | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          phone?: string | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          contact_info?: Json | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          phone?: string | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_contacts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           address: string | null
           category: Database["public"]["Enums"]["store_category"]
-          contact_info: Json | null
           created_at: string
           description: string | null
-          email: string | null
           hours: Json | null
           id: string
           name: string
-          phone: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
           category: Database["public"]["Enums"]["store_category"]
-          contact_info?: Json | null
           created_at?: string
           description?: string | null
-          email?: string | null
           hours?: Json | null
           id?: string
           name: string
-          phone?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
           category?: Database["public"]["Enums"]["store_category"]
-          contact_info?: Json | null
           created_at?: string
           description?: string | null
-          email?: string | null
           hours?: Json | null
           id?: string
           name?: string
-          phone?: string | null
           updated_at?: string
         }
         Relationships: []

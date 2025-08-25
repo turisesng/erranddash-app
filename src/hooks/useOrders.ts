@@ -41,7 +41,6 @@ export const useOrders = () => {
           *,
           stores:store_id (
             name,
-            phone,
             address
           )
         `)
@@ -49,7 +48,7 @@ export const useOrders = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as (Order & { stores: { name: string; phone: string; address: string } })[];
+      return data as (Order & { stores: { name: string; address: string } })[];
     },
     enabled: !!user,
   });

@@ -9,9 +9,17 @@ export interface Store {
   description: string | null;
   category: StoreCategory;
   address: string | null;
+  hours: Record<string, string> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StoreContact {
+  id: string;
+  store_id: string;
   phone: string | null;
   email: string | null;
-  hours: Record<string, string> | null;
+  contact_info: Record<string, any> | null;
   created_at: string;
   updated_at: string;
 }
@@ -67,4 +75,23 @@ export const categoryIcons: Record<StoreCategory, string> = {
   eatery: 'UtensilsCrossed',
   suya: 'Flame',
   others: 'Store'
+};
+
+export const useStoreContacts = (storeId?: string) => {
+  return useQuery({
+    queryKey: ['store-contacts', storeId],
+    queryFn: async () => {
+      if (!storeId) return null;
+      
+      const { data, error } = await supabase
+        .from('store_contacts')
+        .select('*')
+        .eq('store_id', storeId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data as StoreContact | null;
+    },
+    enabled: !!storeId,
+  });
 };
