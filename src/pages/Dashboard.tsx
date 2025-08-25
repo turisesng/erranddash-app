@@ -2,19 +2,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Store, User, LogOut, Home, Package } from 'lucide-react';
+import { Store, User, LogOut, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { StoreDirectory } from '@/components/StoreDirectory';
-import OrderManagement from '@/components/OrderManagement';
-import { NotificationCenter } from '@/components/NotificationCenter';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  
-  // Initialize push notifications
-  usePushNotifications();
 
   const handleSignOut = async () => {
     await signOut();
@@ -33,13 +27,10 @@ export default function Dashboard() {
             <Home className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold text-foreground">Home Dash</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <NotificationCenter />
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
       </div>
 
@@ -56,18 +47,14 @@ export default function Dashboard() {
           </div>
 
           <Tabs defaultValue="home" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 Home
               </TabsTrigger>
               <TabsTrigger value="stores" className="flex items-center gap-2">
                 <Store className="h-4 w-4" />
-                Stores
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="flex items-center gap-2">
-                <Package className="h-4 w-4" />
-                Orders
+                Store Profiles
               </TabsTrigger>
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -107,11 +94,6 @@ export default function Dashboard() {
 
             <TabsContent value="stores" className="space-y-4">
               <StoreDirectory />
-            </TabsContent>
-
-            <TabsContent value="orders" className="space-y-4">
-              <h2 className="text-2xl font-bold mb-4">Your Orders</h2>
-              <OrderManagement />
             </TabsContent>
 
             <TabsContent value="profile" className="space-y-4">

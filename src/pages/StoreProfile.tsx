@@ -7,8 +7,6 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { icons } from 'lucide-react';
-import StoreChat from '@/components/StoreChat';
-import OrderForm from '@/components/OrderForm';
 
 export default function StoreProfile() {
   const { storeId } = useParams<{ storeId: string }>();
@@ -203,19 +201,7 @@ export default function StoreProfile() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Place Order */}
-        <OrderForm 
-          storeId={store.id} 
-          storeName={store.name}
-        />
       </div>
-
-      {/* Chat Component */}
-      <StoreChat 
-        storeId={store.id} 
-        storeName={store.name} 
-      />
     </div>
   );
 }
