@@ -49,39 +49,6 @@ export type Database = {
           },
         ]
       }
-      notifications: {
-        Row: {
-          body: string
-          created_at: string
-          data: Json | null
-          id: string
-          read: boolean
-          title: string
-          type: string
-          user_id: string
-        }
-        Insert: {
-          body: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          read?: boolean
-          title: string
-          type: string
-          user_id: string
-        }
-        Update: {
-          body?: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          read?: boolean
-          title?: string
-          type?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       orders: {
         Row: {
           created_at: string
@@ -157,66 +124,6 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone_number?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      promotions: {
-        Row: {
-          created_at: string
-          expires_at: string | null
-          id: string
-          is_active: boolean
-          message: string
-          store_id: string
-          target_users: string[] | null
-          title: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean
-          message: string
-          store_id: string
-          target_users?: string[] | null
-          title: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          is_active?: boolean
-          message?: string
-          store_id?: string
-          target_users?: string[] | null
-          title?: string
-        }
-        Relationships: []
-      }
-      push_tokens: {
-        Row: {
-          created_at: string
-          id: string
-          platform: string
-          token: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          platform: string
-          token: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          platform?: string
-          token?: string
           updated_at?: string
           user_id?: string
         }
