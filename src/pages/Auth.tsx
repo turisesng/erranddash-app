@@ -1,32 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Clock } from 'lucide-react';
+import { PhoneInput } from '@/components/PhoneInput';
+import { OtpInput } from '@/components/OtpInput';
+
+type AuthStep = 'phone' | 'otp' | 'success';
 
 export default function Auth() {
-  const { signIn, signUp, user, loading } = useAuth();
+  const { sendOtp, verifyOtp, user, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [loginForm, setLoginForm] = useState({
-    phone: '',
-    password: '',
-  });
-  
-  const [signupForm, setSignupForm] = useState({
-    phone: '',
-    password: '',
-    fullName: '',
-  });
-  
+  const [step, setStep] = useState<AuthStep>('phone');
+  const [phone, setPhone] = useState('+234');
+  const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -34,48 +27,132 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [countdown]);
+
+  const validateNigerianNumber = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 13 && digits.startsWith('234')) {
+      const localNumber = digits.slice(3);
+      const validPrefixes = ['703', '704', '705', '706', '708', '802', '803', '804', '805', '806', '807', '808', '809', '810', '811', '812', '813', '814', '815', '816', '817', '818', '819', '901', '902', '903', '904', '905', '906', '907', '908', '909', '915', '916', '917', '918'];
+      return validPrefixes.some(prefix => localNumber.startsWith(prefix));
+    }
+    return false;
+  };
+
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateNigerianNumber(phone)) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Please enter a valid Nigerian phone number",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
-    const { error } = await signIn(loginForm.phone, loginForm.password);
+    const { error } = await sendOtp(phone);
     
     if (error) {
       toast({
-        title: "Login Failed",
-        description: error.message || "Invalid phone number or password",
+        title: "Failed to Send Code",
+        description: error.message || "Could not send verification code. Please try again.",
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Welcome back!",
-        description: "You have successfully logged in.",
+        title: "Code Sent!",
+        description: "Check your phone for the 6-digit verification code.",
       });
+      setStep('otp');
+      setCountdown(30); // 30 second cooldown
     }
     
     setIsLoading(false);
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (otp.length !== 6) {
+      toast({
+        title: "Invalid Code",
+        description: "Please enter the complete 6-digit code",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
-    const { error } = await signUp(signupForm.phone, signupForm.password, signupForm.fullName);
+    const { error } = await verifyOtp(phone, otp);
+    
+    if (error) {
+      if (error.message?.includes('expired')) {
+        toast({
+          title: "Code Expired",
+          description: "The verification code has expired. Please request a new one.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Invalid Code",
+          description: "The verification code is incorrect. Please try again.",
+          variant: "destructive",
+        });
+      }
+      setOtp('');
+    } else {
+      toast({
+        title: "Welcome to Home Dash!",
+        description: "Your phone number has been verified successfully.",
+      });
+      setStep('success');
+    }
+    
+    setIsLoading(false);
+  };
+
+  const handleResendCode = async () => {
+    if (countdown > 0) return;
+    
+    setIsLoading(true);
+    const { error } = await sendOtp(phone);
     
     if (error) {
       toast({
-        title: "Signup Failed",
-        description: error.message || "Failed to create account",
+        title: "Failed to Resend Code",
+        description: error.message || "Could not resend verification code.",
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Account Created!",
-        description: "Please check your phone for verification.",
+        title: "Code Resent!",
+        description: "A new verification code has been sent to your phone.",
       });
+      setCountdown(30);
+      setOtp('');
     }
     
     setIsLoading(false);
+  };
+
+  const goBack = () => {
+    if (step === 'otp') {
+      setStep('phone');
+      setOtp('');
+      setCountdown(0);
+    }
   };
 
   if (loading) {
@@ -90,109 +167,117 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          {step === 'otp' && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="absolute left-4 top-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          )}
           <CardTitle className="text-2xl font-bold">Home Dash</CardTitle>
           <CardDescription>
-            Welcome to your residential management app
+            {step === 'phone' && "Enter your Nigerian phone number to get started"}
+            {step === 'otp' && "Verify your phone number"}
+            {step === 'success' && "Welcome to your residential management app"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+1234567890"
-                    value={loginForm.phone}
-                    onChange={(e) => setLoginForm({...loginForm, phone: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={loginForm.password}
-                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
+          {step === 'phone' && (
+            <form onSubmit={handleSendOtp} className="space-y-6">
+              <PhoneInput
+                value={phone}
+                onChange={setPhone}
+                disabled={isLoading}
+              />
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isLoading || !validateNigerianNumber(phone)}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending Code...
+                  </>
+                ) : (
+                  'Send Code'
+                )}
+              </Button>
+            </form>
+          )}
+
+          {step === 'otp' && (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  Code sent to {phone}
+                </p>
+                <OtpInput
+                  value={otp}
+                  onChange={setOtp}
                   disabled={isLoading}
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={isLoading || otp.length !== 6}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  'Verify Code'
+                )}
+              </Button>
+
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleResendCode}
+                  disabled={countdown > 0 || isLoading}
+                  className="text-sm"
                 >
-                  {isLoading ? (
+                  {countdown > 0 ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Logging in...
+                      <Clock className="mr-2 h-4 w-4" />
+                      Resend in {countdown}s
                     </>
                   ) : (
-                    'Login'
+                    'Resend Code'
                   )}
                 </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={signupForm.fullName}
-                    onChange={(e) => setSignupForm({...signupForm, fullName: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signupPhone">Phone Number</Label>
-                  <Input
-                    id="signupPhone"
-                    type="tel"
-                    placeholder="+1234567890"
-                    value={signupForm.phone}
-                    onChange={(e) => setSignupForm({...signupForm, phone: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signupPassword">Password</Label>
-                  <Input
-                    id="signupPassword"
-                    type="password"
-                    value={signupForm.password}
-                    onChange={(e) => setSignupForm({...signupForm, password: e.target.value})}
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={isLoading}
+              </div>
+            </form>
+          )}
+
+          {step === 'success' && (
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating Account...
-                    </>
-                  ) : (
-                    'Sign Up'
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Redirecting to your dashboard...
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
