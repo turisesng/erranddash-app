@@ -26,9 +26,7 @@ const Index = () => {
         <div className="mb-8">
           <Home className="h-16 w-16 mx-auto mb-4 text-primary" />
           <h1 className="text-4xl font-bold mb-4 text-foreground">Home Dash</h1>
-          <p className="text-xl text-muted-foreground mb-8">Your friendly estate runner — quick grocery dashes, package drops, and “please help me buy” errands, all without leaving your gate.
-
-        </p>
+          <p className="text-xl text-muted-foreground mb-8">Your friendly Estate errand runner — quick grocery dashes, Pharmacy drops, and “please help me buy” errands, all without leaving your gate.</p>
         </div>
         
         <Button onClick={() => navigate('/auth')} size="lg" className="w-full">
