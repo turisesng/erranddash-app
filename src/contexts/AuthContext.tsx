@@ -6,8 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  sendOtp: (phone: string) => Promise<{ error: any }>;
-  verifyOtp: (phone: string, token: string) => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -71,23 +70,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const sendOtp = async (phone: string) => {
+  const signInWithGoogle = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        phone,
-      });
-      return { error };
-    } catch (error) {
-      return { error };
-    }
-  };
-
-  const verifyOtp = async (phone: string, token: string) => {
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        phone,
-        token,
-        type: 'sms'
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
       });
       return { error };
     } catch (error) {
@@ -103,8 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
-    sendOtp,
-    verifyOtp,
+    signInWithGoogle,
     signOut,
   };
 

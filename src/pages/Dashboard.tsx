@@ -31,7 +31,7 @@ export default function Dashboard() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <Home className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold text-foreground">Home Dash</h1>
+            <h1 className="text-xl font-bold text-foreground">Door Dash</h1>
           </div>
           <div className="flex items-center gap-2">
             <NotificationCenter />
@@ -82,7 +82,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
-                    Welcome to your Home Dash! Here you can manage your residential services, 
+                    Welcome to Door Dash! Here you can manage your delivery services, 
                     view store profiles, and update your personal information.
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

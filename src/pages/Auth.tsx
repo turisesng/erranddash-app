@@ -4,22 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, ArrowLeft, Clock } from 'lucide-react';
-import { PhoneInput } from '@/components/PhoneInput';
-import { OtpInput } from '@/components/OtpInput';
-
-type AuthStep = 'phone' | 'otp' | 'success';
+import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
-  const { sendOtp, verifyOtp, user, loading } = useAuth();
+  const { signInWithGoogle, user, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const [step, setStep] = useState<AuthStep>('phone');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -27,132 +19,20 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (countdown > 0) {
-      interval = setInterval(() => {
-        setCountdown(prev => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [countdown]);
-
-  const validateNigerianNumber = (phone: string) => {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length === 13 && digits.startsWith('234')) {
-      const localNumber = digits.slice(3);
-      const validPrefixes = ['703', '704', '705', '706', '708', '802', '803', '804', '805', '806', '807', '808', '809', '810', '811', '812', '813', '814', '815', '816', '817', '818', '819', '901', '902', '903', '904', '905', '906', '907', '908', '909', '915', '916', '917', '918'];
-      return validPrefixes.some(prefix => localNumber.startsWith(prefix));
-    }
-    return false;
-  };
-
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateNigerianNumber(phone)) {
-      toast({
-        title: "Invalid Phone Number",
-        description: "Please enter a valid Nigerian phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     
-    const { error } = await sendOtp(phone);
+    const { error } = await signInWithGoogle();
     
     if (error) {
       toast({
-        title: "Failed to Send Code",
-        description: error.message || "Could not send verification code. Please try again.",
+        title: "Sign In Failed",
+        description: error.message || "Could not sign in with Google. Please try again.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Code Sent!",
-        description: "Check your phone for the 6-digit verification code.",
-      });
-      setStep('otp');
-      setCountdown(30); // 30 second cooldown
     }
     
     setIsLoading(false);
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (otp.length !== 6) {
-      toast({
-        title: "Invalid Code",
-        description: "Please enter the complete 6-digit code",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    const { error } = await verifyOtp(phone, otp);
-    
-    if (error) {
-      if (error.message?.includes('expired')) {
-        toast({
-          title: "Code Expired",
-          description: "The verification code has expired. Please request a new one.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Invalid Code",
-          description: "The verification code is incorrect. Please try again.",
-          variant: "destructive",
-        });
-      }
-      setOtp('');
-    } else {
-      toast({
-        title: "Welcome to Home Dash!",
-        description: "Your phone number has been verified successfully.",
-      });
-      setStep('success');
-    }
-    
-    setIsLoading(false);
-  };
-
-  const handleResendCode = async () => {
-    if (countdown > 0) return;
-    
-    setIsLoading(true);
-    const { error } = await sendOtp(phone);
-    
-    if (error) {
-      toast({
-        title: "Failed to Resend Code",
-        description: error.message || "Could not resend verification code.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Code Resent!",
-        description: "A new verification code has been sent to your phone.",
-      });
-      setCountdown(30);
-      setOtp('');
-    }
-    
-    setIsLoading(false);
-  };
-
-  const goBack = () => {
-    if (step === 'otp') {
-      setStep('phone');
-      setOtp('');
-      setCountdown(0);
-    }
   };
 
   if (loading) {
@@ -167,117 +47,51 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          {step === 'otp' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={goBack}
-              className="absolute left-4 top-4"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          )}
-          <CardTitle className="text-2xl font-bold">Home Dash</CardTitle>
+          <CardTitle className="text-2xl font-bold">Door Dash</CardTitle>
           <CardDescription>
-            {step === 'phone' && "Enter your Nigerian phone number to get started"}
-            {step === 'otp' && "Verify your phone number"}
-            {step === 'success' && "Welcome to your residential management app"}
+            Sign in to access your delivery management app
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {step === 'phone' && (
-            <form onSubmit={handleSendOtp} className="space-y-6">
-              <PhoneInput
-                value={phone}
-                onChange={setPhone}
-                disabled={isLoading}
-              />
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={isLoading || !validateNigerianNumber(phone)}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending Code...
-                  </>
-                ) : (
-                  'Send Code'
-                )}
-              </Button>
-            </form>
-          )}
-
-          {step === 'otp' && (
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground text-center">
-                  Code sent to {phone}
-                </p>
-                <OtpInput
-                  value={otp}
-                  onChange={setOtp}
-                  disabled={isLoading}
-                />
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={isLoading || otp.length !== 6}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  'Verify Code'
-                )}
-              </Button>
-
-              <div className="text-center">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleResendCode}
-                  disabled={countdown > 0 || isLoading}
-                  className="text-sm"
-                >
-                  {countdown > 0 ? (
-                    <>
-                      <Clock className="mr-2 h-4 w-4" />
-                      Resend in {countdown}s
-                    </>
-                  ) : (
-                    'Resend Code'
-                  )}
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {step === 'success' && (
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <svg
-                  className="w-8 h-8 text-primary"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={handleGoogleSignIn}
+            className="w-full"
+            disabled={isLoading}
+            variant="outline"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
                 </svg>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Redirecting to your dashboard...
-              </p>
-            </div>
-          )}
+                Sign in with Google
+              </>
+            )}
+          </Button>
+          
+          <p className="text-sm text-muted-foreground text-center">
+            Welcome to your delivery management platform
+          </p>
         </CardContent>
       </Card>
     </div>
