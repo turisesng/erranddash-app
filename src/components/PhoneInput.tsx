@@ -16,11 +16,15 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   disabled = false,
   className
 }) => {
-  const [displayValue, setDisplayValue] = useState(value);
+  const [displayValue, setDisplayValue] = useState(value === '+234' ? '' : value);
 
   const formatNigerianPhone = (input: string) => {
     // Remove all non-digits
     const digits = input.replace(/\D/g, '');
+    
+    if (!digits) {
+      return '';
+    }
     
     if (digits.startsWith('234')) {
       // Already has country code

@@ -16,7 +16,7 @@ export default function Auth() {
   const navigate = useNavigate();
   
   const [step, setStep] = useState<AuthStep>('phone');
-  const [phone, setPhone] = useState('+234');
+  const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
