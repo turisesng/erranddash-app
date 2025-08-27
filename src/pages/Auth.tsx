@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Home } from 'lucide-react';
 
 export default function Auth() {
   const { signInWithGoogle, user, loading } = useAuth();
@@ -47,7 +47,8 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Door Dash</CardTitle>
+          <Home className="h-16 w-16 mx-auto mb-4 text-primary" />
+          <CardTitle className="text-2xl font-bold text-primary">Door Dash</CardTitle>
           <CardDescription>
             Sign in to access your delivery management app
           </CardDescription>
