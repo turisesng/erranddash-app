@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, Home, User, Store, Truck } from 'lucide-react';
+import { Loader2, Home, User, Store, Truck, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import heroImage from '@/assets/delivery-riders-hero.jpg';
 
 const Index = () => {
   const {
@@ -52,66 +53,93 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center max-w-md mx-auto p-6">
-        <div className="mb-8">
-          <Home className="h-16 w-16 mx-auto mb-4 text-primary" />
-          <h1 className="text-4xl font-bold mb-4 text-foreground">Door Dash</h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Your reliable delivery management platform — seamless order tracking, 
-            store connections, and efficient delivery coordination.
-          </p>
+    <div className="min-h-screen relative">
+      {/* Background Image with Dark Overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-black/70"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-10 flex justify-between items-center p-6">
+        <div className="flex items-center gap-2">
+          <Home className="h-8 w-8 text-white" />
+          <span className="text-2xl font-bold text-white">Door Dash</span>
         </div>
-        
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground mb-6">
-            Sign up or log in to access your dashboard
-          </p>
+        <div className="hidden md:flex items-center gap-6">
+          <a href="#" className="text-white hover:text-primary transition-colors">Home</a>
+          <a href="#" className="text-white hover:text-primary transition-colors">About</a>
+          <a href="#" className="text-white hover:text-primary transition-colors">FAQ</a>
+          <Button variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+            Sign Up
+          </Button>
+        </div>
+        <Menu className="md:hidden h-6 w-6 text-white" />
+      </nav>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-88px)]">
+        <div className="text-center max-w-2xl mx-auto p-6">
+          <div className="mb-8">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">Door Dash</h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
+              Your reliable delivery management platform — seamless order tracking, 
+              store connections, and efficient delivery coordination.
+            </p>
+          </div>
           
-          <div className="grid gap-3">
-            <Button 
-              onClick={() => handleRoleSignIn('customer')} 
-              size="lg" 
-              className="w-full flex items-center gap-2"
-              disabled={signingInRole !== null}
-            >
-              {signingInRole === 'customer' ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <User className="h-4 w-4" />
-              )}
-              Sign in as Customer
-            </Button>
+          <div className="space-y-6">
+            <p className="text-white/80 mb-8 text-lg">
+              Sign up or log in to access your dashboard
+            </p>
             
-            <Button 
-              onClick={() => handleRoleSignIn('storeOwner')} 
-              size="lg" 
-              variant="outline"
-              className="w-full flex items-center gap-2"
-              disabled={signingInRole !== null}
-            >
-              {signingInRole === 'storeOwner' ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Store className="h-4 w-4" />
-              )}
-              Sign in as Store Owner
-            </Button>
-            
-            <Button 
-              onClick={() => handleRoleSignIn('rider')} 
-              size="lg" 
-              variant="outline"
-              className="w-full flex items-center gap-2"
-              disabled={signingInRole !== null}
-            >
-              {signingInRole === 'rider' ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Truck className="h-4 w-4" />
-              )}
-              Sign in as Rider
-            </Button>
+            <div className="grid gap-4 max-w-md mx-auto">
+              <Button 
+                onClick={() => handleRoleSignIn('customer')} 
+                size="lg" 
+                className="w-full flex items-center gap-3 bg-primary hover:bg-primary/90 text-white py-4"
+                disabled={signingInRole !== null}
+              >
+                {signingInRole === 'customer' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
+                Sign in as Customer
+              </Button>
+              
+              <Button 
+                onClick={() => handleRoleSignIn('storeOwner')} 
+                size="lg" 
+                variant="outline"
+                className="w-full flex items-center gap-3 bg-white/10 text-white border-white/30 hover:bg-white/20 py-4"
+                disabled={signingInRole !== null}
+              >
+                {signingInRole === 'storeOwner' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Store className="h-5 w-5" />
+                )}
+                Sign in as Store Owner
+              </Button>
+              
+              <Button 
+                onClick={() => handleRoleSignIn('rider')} 
+                size="lg" 
+                variant="outline"
+                className="w-full flex items-center gap-3 bg-white/10 text-white border-white/30 hover:bg-white/20 py-4"
+                disabled={signingInRole !== null}
+              >
+                {signingInRole === 'rider' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Truck className="h-5 w-5" />
+                )}
+                Sign in as Rider
+              </Button>
+            </div>
           </div>
         </div>
       </div>
