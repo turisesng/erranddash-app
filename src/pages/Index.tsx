@@ -65,9 +65,8 @@ const Index = () => {
 
       {/* Navigation */}
       <nav className="relative z-10 flex justify-between items-center p-6">
-        <div className="flex items-center gap-3">
-          <img src={doorDashLogo} alt="Door Dash Logo" className="h-10 w-10" />
-          <span className="text-2xl font-bold text-white">Door Dash</span>
+        <div className="flex items-center">
+          <img src={doorDashLogo} alt="Door Dash Logo" className="h-16 w-auto" />
         </div>
         <div className="hidden md:flex items-center gap-6">
           <a href="#" className="text-white hover:text-primary transition-colors">Home</a>
@@ -84,7 +83,6 @@ const Index = () => {
       <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-88px)]">
         <div className="text-center max-w-2xl mx-auto p-6">
           <div className="mb-8">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">Door Dash</h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
               Your reliable delivery management platform — seamless order tracking, 
               store connections, and efficient delivery coordination.
