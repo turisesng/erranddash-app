@@ -5,6 +5,7 @@ import { Loader2, Home, User, Store, Truck, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import heroImage from '@/assets/delivery-riders-hero.jpg';
+import doorDashLogo from '@/assets/door-dash-logo.png';
 
 const Index = () => {
   const {
@@ -64,8 +65,8 @@ const Index = () => {
 
       {/* Navigation */}
       <nav className="relative z-10 flex justify-between items-center p-6">
-        <div className="flex items-center gap-2">
-          <Home className="h-8 w-8 text-white" />
+        <div className="flex items-center gap-3">
+          <img src={doorDashLogo} alt="Door Dash Logo" className="h-10 w-10" />
           <span className="text-2xl font-bold text-white">Door Dash</span>
         </div>
         <div className="hidden md:flex items-center gap-6">
@@ -139,6 +140,29 @@ const Index = () => {
                 )}
                 Sign in as Rider
               </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Services Section */}
+      <div className="relative z-10 bg-black/80 py-16">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">Our Services</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="text-center p-6">
+              <Store className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-3">Grocery Delivery</h3>
+              <p className="text-white/80">
+                Get groceries from your favourite stores within the estate, delivered fast to your door.
+              </p>
+            </div>
+            <div className="text-center p-6">
+              <User className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-3">Shopping On Your Behalf</h3>
+              <p className="text-white/80">
+                Our riders buy items for you when you can't step out.
+              </p>
             </div>
           </div>
         </div>
