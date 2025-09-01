@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signInWithGoogle: () => Promise<{ error: any }>;
+  signInWithGoogleForRole: (role: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -62,8 +63,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .maybeSingle();
 
       if (!profile) {
-        // Profile will be created automatically by the trigger
-        console.log('Profile will be created automatically');
+        // Get selected role from localStorage
+        const selectedRole = localStorage.getItem('selectedRole') || 'customer';
+        localStorage.removeItem('selectedRole'); // Clean up
+        
+        // Create profile with selected role
+        await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            user_role: selectedRole as any,
+            full_name: user.user_metadata?.full_name || '',
+            phone_number: user.phone || ''
+          } as any);
+      } else if (localStorage.getItem('selectedRole')) {
+        // Update existing profile with new role if needed
+        const selectedRole = localStorage.getItem('selectedRole');
+        localStorage.removeItem('selectedRole');
+        
+        await supabase
+          .from('profiles')
+          .update({ user_role: selectedRole } as any)
+          .eq('user_id', user.id);
       }
     } catch (error) {
       console.error('Error with profile:', error);
@@ -72,6 +93,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      return { error };
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  const signInWithGoogleForRole = async (role: string) => {
+    try {
+      // Store the selected role in localStorage to use after OAuth redirect
+      localStorage.setItem('selectedRole', role);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -93,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     loading,
     signInWithGoogle,
+    signInWithGoogleForRole,
     signOut,
   };
 

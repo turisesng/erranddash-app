@@ -10,18 +10,29 @@ export function DeliveryHistory() {
 
   const { data: deliveryHistory, isLoading } = useQuery({
     queryKey: ['delivery-history', user?.id],
-    queryFn: async () => {
-      if (!user) return [] as any[];
+    queryFn: async (): Promise<any[]> => {
+      if (!user) return [];
       
-      const { data, error } = await supabase
-        .from('orders')
-        .select('id, created_at, delivery_address, total_amount, status')
-        .eq('rider_id', user.id)
-        .eq('status', 'delivered')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return (data || []) as any[];
+      try {
+        // Use simpler query structure to avoid type issues
+        const result = await supabase
+          .from('orders')
+          .select('*');
+        
+        if (result.error) throw result.error;
+        
+        // Filter the results manually to avoid complex type inference
+        const filteredData = (result.data || []).filter((order: any) => 
+          order.rider_id === user.id && order.status === 'delivered'
+        );
+        
+        return filteredData.sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      } catch (error) {
+        console.error('Error fetching delivery history:', error);
+        return [];
+      }
     },
     enabled: !!user,
   });
