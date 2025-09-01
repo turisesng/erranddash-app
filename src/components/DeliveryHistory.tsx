@@ -11,19 +11,20 @@ export function DeliveryHistory() {
   const { data: deliveryHistory, isLoading } = useQuery({
     queryKey: ['delivery-history', user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return [] as any[];
       
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .select('id, created_at, delivery_address, total_amount, status')
         .eq('rider_id', user.id)
         .eq('status', 'delivered')
         .order('created_at', { ascending: false });
 
-      return data || [];
+      if (error) throw error;
+      return (data || []) as any[];
     },
     enabled: !!user,
-  }) as { data: any[] | undefined, isLoading: boolean };
+  });
 
   if (isLoading) {
     return (
