@@ -66,7 +66,7 @@ const Index = () => {
       {/* Navigation */}
       <nav className="relative z-10 flex justify-between items-center p-6">
         <div className="flex items-center">
-          <img src={doorDashLogo} alt="Door Dash Logo" className="h-16 w-auto" />
+          <img src={doorDashLogo} alt="Door Dash Logo" className="h-20 w-auto opacity-90 drop-shadow-lg" />
         </div>
         <div className="hidden md:flex items-center gap-6">
           <a href="#" className="text-white hover:text-primary transition-colors">Home</a>
