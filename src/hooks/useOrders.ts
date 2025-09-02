@@ -26,14 +26,6 @@ export interface Order {
   updated_at: string;
 }
 
-export interface CreateOrderData {
-  store_id: string;
-  items: Array<{ name: string; quantity: number; price: number }>;
-  total_amount: number;
-  delivery_address: string;
-  phone_number: string;
-  notes?: string;
-}
 
 export const useOrders = () => {
   const { user } = useAuth();
@@ -65,31 +57,9 @@ export const useOrders = () => {
     enabled: !!user,
   });
 
-  const createOrder = useMutation({
-    mutationFn: async (orderData: CreateOrderData) => {
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('orders')
-        .insert({
-          ...orderData,
-          user_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-    },
-  });
 
   return {
     orders: orders || [],
     isLoading,
-    createOrder: createOrder.mutate,
-    isCreating: createOrder.isPending,
   };
 };
