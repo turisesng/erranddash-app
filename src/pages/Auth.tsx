@@ -43,8 +43,11 @@ export default function Auth() {
   return <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Home className="h-16 w-16 mx-auto mb-4 text-primary" />
-          <CardTitle className="text-2xl font-bold text-primary">Door Dash</CardTitle>
+          <img 
+            src="/lovable-uploads/65743803-2e7e-4d42-ac5c-d904276104fb.png" 
+            alt="Door Dash - Swift Deliveries" 
+            className="h-20 w-auto mx-auto mb-4" 
+          />
           <CardDescription>
             Sign in to access your delivery management app
           </CardDescription>
