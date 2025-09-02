@@ -84,48 +84,82 @@ export type Database = {
       }
       orders: {
         Row: {
+          assignment_requested_at: string | null
           created_at: string
+          customer_notes: string | null
           delivery_address: string
+          delivery_fee: number | null
+          estimated_delivery_time: string | null
           id: string
           items: Json
           notes: string | null
           payment_method: string
           phone_number: string
+          picked_up_at: string | null
+          pickup_requested_at: string | null
+          rider_id: string | null
+          rider_notes: string | null
           status: string
           store_id: string
+          store_notes: string | null
           total_amount: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          assignment_requested_at?: string | null
           created_at?: string
+          customer_notes?: string | null
           delivery_address: string
+          delivery_fee?: number | null
+          estimated_delivery_time?: string | null
           id?: string
           items?: Json
           notes?: string | null
           payment_method?: string
           phone_number: string
+          picked_up_at?: string | null
+          pickup_requested_at?: string | null
+          rider_id?: string | null
+          rider_notes?: string | null
           status?: string
           store_id: string
+          store_notes?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          assignment_requested_at?: string | null
           created_at?: string
+          customer_notes?: string | null
           delivery_address?: string
+          delivery_fee?: number | null
+          estimated_delivery_time?: string | null
           id?: string
           items?: Json
           notes?: string | null
           payment_method?: string
           phone_number?: string
+          picked_up_at?: string | null
+          pickup_requested_at?: string | null
+          rider_id?: string | null
+          rider_notes?: string | null
           status?: string
           store_id?: string
+          store_notes?: string | null
           total_amount?: number | null
           updated_at?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_rider_id_fkey"
+            columns: ["rider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "orders_store_id_fkey"
             columns: ["store_id"]
@@ -143,6 +177,7 @@ export type Database = {
           phone_number: string | null
           updated_at: string
           user_id: string
+          user_role: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
           created_at?: string
@@ -151,6 +186,7 @@ export type Database = {
           phone_number?: string | null
           updated_at?: string
           user_id: string
+          user_role?: Database["public"]["Enums"]["user_role"]
         }
         Update: {
           created_at?: string
@@ -159,6 +195,7 @@ export type Database = {
           phone_number?: string | null
           updated_at?: string
           user_id?: string
+          user_role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
       }
@@ -222,6 +259,48 @@ export type Database = {
         }
         Relationships: []
       }
+      rider_profiles: {
+        Row: {
+          availability_status: string | null
+          created_at: string
+          current_location: Json | null
+          id: string
+          license_number: string | null
+          phone_number: string | null
+          rating: number | null
+          total_deliveries: number | null
+          updated_at: string
+          user_id: string
+          vehicle_type: string | null
+        }
+        Insert: {
+          availability_status?: string | null
+          created_at?: string
+          current_location?: Json | null
+          id?: string
+          license_number?: string | null
+          phone_number?: string | null
+          rating?: number | null
+          total_deliveries?: number | null
+          updated_at?: string
+          user_id: string
+          vehicle_type?: string | null
+        }
+        Update: {
+          availability_status?: string | null
+          created_at?: string
+          current_location?: Json | null
+          id?: string
+          license_number?: string | null
+          phone_number?: string | null
+          rating?: number | null
+          total_deliveries?: number | null
+          updated_at?: string
+          user_id?: string
+          vehicle_type?: string | null
+        }
+        Relationships: []
+      }
       store_contacts: {
         Row: {
           contact_info: Json | null
@@ -260,6 +339,36 @@ export type Database = {
           },
         ]
       }
+      store_owner_profiles: {
+        Row: {
+          business_license: string | null
+          business_name: string | null
+          created_at: string
+          id: string
+          phone_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_license?: string | null
+          business_name?: string | null
+          created_at?: string
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_license?: string | null
+          business_name?: string | null
+          created_at?: string
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       stores: {
         Row: {
           address: string | null
@@ -269,6 +378,7 @@ export type Database = {
           hours: Json | null
           id: string
           name: string
+          owner_id: string | null
           updated_at: string
         }
         Insert: {
@@ -279,6 +389,7 @@ export type Database = {
           hours?: Json | null
           id?: string
           name: string
+          owner_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -289,6 +400,7 @@ export type Database = {
           hours?: Json | null
           id?: string
           name?: string
+          owner_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -298,10 +410,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      assign_rider_to_order: {
+        Args: { order_id: string; rider_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       store_category: "grocery" | "pharmacy" | "eatery" | "suya" | "others"
+      user_role: "customer" | "storeOwner" | "rider"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -430,6 +546,7 @@ export const Constants = {
   public: {
     Enums: {
       store_category: ["grocery", "pharmacy", "eatery", "suya", "others"],
+      user_role: ["customer", "storeOwner", "rider"],
     },
   },
 } as const
